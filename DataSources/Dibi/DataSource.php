@@ -40,7 +40,7 @@ class DataSource extends DataSources\DataSource
 	 */
 	public function getColumns()
 	{
-		throw new \NotSupportedException;
+		throw new \Nette\NotSupportedException;
 	}
 
 	/**
@@ -49,7 +49,7 @@ class DataSource extends DataSources\DataSource
 	 */
 	public function hasColumn($name)
 	{
-		throw new \NotSupportedException;
+		throw new \Nette\NotSupportedException;
 	}
 
 	/**
@@ -59,7 +59,7 @@ class DataSource extends DataSources\DataSource
 	 */
 	public function getFilterItems($column)
 	{
-		throw new \NotImplementedException;
+		throw new \Nette\NotImplementedException;
 	}
 
 	/**

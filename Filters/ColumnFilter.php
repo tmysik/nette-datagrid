@@ -12,9 +12,9 @@ use Nette, DataGrid;
  * @example    http://addons.nette.org/datagrid
  * @package    Nette\Extras\DataGrid
  */
-abstract class ColumnFilter extends Nette\Component implements IColumnFilter
+abstract class ColumnFilter extends Nette\ComponentModel\Component implements IColumnFilter
 {
-	/** @var Nette\Forms\FormControl  form element */
+	/** @var Nette\Forms\Controls\BaseControl  form element */
 	protected $element;
 
 	/** @var string  value of filter (if was filtered) */
@@ -34,7 +34,7 @@ abstract class ColumnFilter extends Nette\Component implements IColumnFilter
 
 	/**
 	 * Returns filter's form element.
-	 * @return Nette\Forms\FormControl
+	 * @return Nette\Forms\Controls\BaseControl
 	 */
 	public function getFormControl()
 	{

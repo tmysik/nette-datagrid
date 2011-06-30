@@ -35,7 +35,7 @@ class CheckboxColumn extends NumericColumn
 	 */
 	public function formatContent($value, $data = NULL)
 	{
-		$checkbox = Nette\Web\Html::el('input')->type('checkbox')->disabled('disabled');
+		$checkbox = Nette\Utils\Html::el('input')->type('checkbox')->disabled('disabled');
 		if ($value)
 			$checkbox->checked = TRUE;
 		return (string) $checkbox;

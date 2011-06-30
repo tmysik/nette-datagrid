@@ -17,7 +17,7 @@ class WildcardHelper
 		$value = str_replace($replacement, '\\' . $replacement, $value);
 
 		// Replace asterisks
-		$value = \Nette\String::replace($value, '~(?!\\\\)(.?)\\*~', '\\1' . $replacement);
+		$value = \Nette\Utils\Strings::replace($value, '~(?!\\\\)(.?)\\*~', '\\1' . $replacement);
 
 		// Replace escaped asterisks
 		return str_replace('\\*', '*', $value);

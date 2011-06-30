@@ -1,7 +1,7 @@
 <?php
 
 namespace DataGrid\Columns;
-use DataGrid, Nette\Web\Html, DataGrid\DataSources\IDataSource;
+use DataGrid, Nette\Utils\Html, DataGrid\DataSources\IDataSource;
 
 /**
  * Representation of positioning data grid column, that provides moving entries up or down.
@@ -93,7 +93,7 @@ class PositionColumn extends NumericColumn
 	 */
 	public function formatContent($value, $data = NULL)
 	{
-		$control = $this->getDataGrid()->lookup('Nette\Application\Control', TRUE);
+		$control = $this->getDataGrid()->lookup('Nette\Application\UI\Control', TRUE);
 		$uplink = $control->link($this->destination, array('key' => $value, 'dir' => 'up'));
 		$downlink = $control->link($this->destination, array('key' => $value, 'dir' => 'down'));
 

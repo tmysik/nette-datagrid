@@ -24,7 +24,7 @@ class ActionColumn extends Column implements \ArrayAccess
 	public function __construct($caption = 'Actions')
 	{
 		parent::__construct($caption);
-		$this->addComponent(new Nette\ComponentContainer, 'actions');
+		$this->addComponent(new Nette\ComponentModel\Container, 'actions');
 		$this->removeComponent($this->getComponent('filters'));
 		$this->orderable = FALSE;
 	}
@@ -44,12 +44,12 @@ class ActionColumn extends Column implements \ArrayAccess
 	 * Returns column's filter.
 	 * @param  bool   throw exception if component doesn't exist?
 	 * @return DataGrid\Filters\IColumnFilter|NULL
-	 * @throws \InvalidStateException
+	 * @throws Nette\InvalidStateException
 	 */
 	public function getFilter($need = TRUE)
 	{
 		if ($need == TRUE) {
-			throw new \InvalidStateException("DataGrid\Columns\ActionColumn cannot has filter.");
+			throw new Nette\InvalidStateException("DataGrid\Columns\ActionColumn cannot has filter.");
 		}
 		return NULL;
 	}
@@ -86,7 +86,7 @@ class ActionColumn extends Column implements \ArrayAccess
 	 * Returns column's action specified by name.
 	 * @param  string action's name
 	 * @param  bool   throw exception if component doesn't exist?
-	 * @return Nette\IComponent|NULL
+	 * @return Nette\ComponentModel\IComponent|NULL
 	 * @todo return type
 	 */
 	public function getAction($name = NULL, $need = TRUE)
@@ -115,7 +115,7 @@ class ActionColumn extends Column implements \ArrayAccess
 	 * @param  mixed
 	 * @param  \DibiRow|array
 	 * @return string
-	 * @throws \InvalidStateException
+	 * @throws Nette\InvalidStateException
 	 */
 	public function formatContent($value, $data = NULL)
 	{
@@ -126,12 +126,12 @@ class ActionColumn extends Column implements \ArrayAccess
 	/**
 	 * Filters data source.
 	 * @param  mixed
-	 * @throws \InvalidStateException
+	 * @throws Nette\InvalidStateException
 	 * @return void
 	 */
 	public function applyFilter($value)
 	{
-		throw new \InvalidStateException("DataGrid\Columns\ActionColumn cannot be filtered.");
+		throw new Nette\InvalidStateException("DataGrid\Columns\ActionColumn cannot be filtered.");
 	}
 
 
@@ -143,12 +143,12 @@ class ActionColumn extends Column implements \ArrayAccess
 	/**
 	 * Adds the component to the container.
 	 * @param  string  component name
-	 * @param  Nette\IComponent
+	 * @param  Nette\ComponentModel\IComponent
 	 * @return void.
 	 */
 	final public function offsetSet($name, $component)
 	{
-		if (!$component instanceof Nette\IComponent) {
+		if (!$component instanceof Nette\ComponentModel\IComponent) {
 			throw new \InvalidArgumentException("DataGrid\Columns\ActionColumn accepts only Nette\IComponent objects.");
 		}
 		$this->getComponent('actions')->addComponent($component, $name == NULL ? count($this->getActions()) : $name);
@@ -158,7 +158,7 @@ class ActionColumn extends Column implements \ArrayAccess
 	/**
 	 * Returns component specified by name. Throws exception if component doesn't exist.
 	 * @param  string  component name
-	 * @return Nette\IComponent
+	 * @return Nette\ComponentModel\IComponent
 	 * @throws \InvalidArgumentException
 	 */
 	final public function offsetGet($name)

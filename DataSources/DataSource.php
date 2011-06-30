@@ -15,7 +15,7 @@ abstract class DataSource extends Nette\Object implements IDataSource
 	 * Validate filter operation
 	 * @param string $operation
 	 * @return void
-	 * @throws \InvalidStateException if operation is not valid
+	 * @throws Nette\InvalidStateException if operation is not valid
 	 */
 	protected function validateFilterOperation($operation)
 	{
@@ -33,7 +33,7 @@ abstract class DataSource extends Nette\Object implements IDataSource
 		);
 
 		if (!in_array($operation, $types, TRUE)) {
-			throw new \InvalidStateException('Invalid filter operation type.');
+			throw new Nette\InvalidStateException('Invalid filter operation type.');
 		}
 	}
 }

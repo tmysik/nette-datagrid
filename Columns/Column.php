@@ -1,7 +1,7 @@
 <?php
 
 namespace DataGrid\Columns;
-use Nette, Nette\Web\Html, Datagrid, DataGrid\Filters;
+use Nette, Nette\Utils\Html, Datagrid, DataGrid\Filters;
 
 /**
  * Base class that implements the basic common functionality to data grid columns.
@@ -12,12 +12,12 @@ use Nette, Nette\Web\Html, Datagrid, DataGrid\Filters;
  * @example    http://addons.nette.org/datagrid
  * @package    Nette\Extras\DataGrid
  */
-abstract class Column extends Nette\ComponentContainer implements IColumn
+abstract class Column extends Nette\ComponentModel\Container implements IColumn
 {
-	/** @var Nette\Web\Html  table header element template */
+	/** @var Html  table header element template */
 	protected $header;
 
-	/** @var Nette\Web\Html  table cell element template */
+	/** @var Html  table cell element template */
 	protected $cell;
 
 	/** @var string */
@@ -47,7 +47,7 @@ abstract class Column extends Nette\ComponentContainer implements IColumn
 	public function __construct($caption = NULL, $maxLength = NULL)
 	{
 		parent::__construct();
-		$this->addComponent(new Nette\ComponentContainer, 'filters');
+		$this->addComponent(new Nette\ComponentModel\Container, 'filters');
 		$this->header = Html::el();
 		$this->cell = Html::el();
 		$this->caption = $caption;
@@ -59,12 +59,12 @@ abstract class Column extends Nette\ComponentContainer implements IColumn
 	/**
 	 * This method will be called when the component (or component's parent)
 	 * becomes attached to a monitored object. Do not call this method yourself.
-	 * @param  Nette\IComponent
+	 * @param  Nette\ComponentModel\IComponent
 	 * @return void
 	 */
 	protected function attached($component)
 	{
-		if ($component instanceof DataGrid\DataGrid) {
+		if ($component instanceof Datagrid\DataGrid) {
 			$this->setParent($component);
 
 			if ($this->caption === NULL) {
@@ -77,7 +77,7 @@ abstract class Column extends Nette\ComponentContainer implements IColumn
 	/**
 	 * Returns DataGrid.
 	 * @param  bool   throw exception if form doesn't exist?
-	 * @return DataGrid\DataGrid
+	 * @return Datagrid\DataGrid
 	 */
 	public function getDataGrid($need = TRUE)
 	{
@@ -92,7 +92,7 @@ abstract class Column extends Nette\ComponentContainer implements IColumn
 
 	/**
 	 * Returns headers's HTML element template.
-	 * @return Nette\Web\Html
+	 * @return Html
 	 */
 	public function getHeaderPrototype()
 	{
@@ -102,7 +102,7 @@ abstract class Column extends Nette\ComponentContainer implements IColumn
 
 	/**
 	 * Returns table's cell HTML element template.
-	 * @return Nette\Web\Html
+	 * @return Html
 	 */
 	public function getCellPrototype()
 	{
@@ -156,14 +156,14 @@ abstract class Column extends Nette\ComponentContainer implements IColumn
 	 */
 	public function hasFilter()
 	{
-		return $this->getFilter(FALSE) instanceof DataGrid\Filters\IColumnFilter;
+		return $this->getFilter(FALSE) instanceof Filters\IColumnFilter;
 	}
 
 
 	/**
 	 * Returns column's filter.
 	 * @param  bool   throw exception if component doesn't exist?
-	 * @return DataGrid\Filters\IColumnFilter|NULL
+	 * @return Filters\IColumnFilter|NULL
 	 */
 	public function getFilter($need = TRUE)
 	{
@@ -202,7 +202,7 @@ abstract class Column extends Nette\ComponentContainer implements IColumn
 	/**
 	 * Adds default sorting to data grid.
 	 * @param string
-	 * @return DataGrid\Columns\Column  provides a fluent interface
+	 * @return Column  provides a fluent interface
 	 */
 	public function addDefaultSorting($order = 'ASC')
 	{
@@ -222,7 +222,7 @@ abstract class Column extends Nette\ComponentContainer implements IColumn
 	/**
 	 * Adds default filtering to data grid.
 	 * @param string
-	 * @return DataGrid\Columns\Column  provides a fluent interface
+	 * @return Column  provides a fluent interface
 	 */
 	public function addDefaultFiltering($value)
 	{
@@ -236,7 +236,7 @@ abstract class Column extends Nette\ComponentContainer implements IColumn
 
 	/**
 	 * Removes data grid's default sorting.
-	 * @return DataGrid\Columns\Column  provides a fluent interface
+	 * @return Column  provides a fluent interface
 	 */
 	public function removeDefaultSorting()
 	{
@@ -250,7 +250,7 @@ abstract class Column extends Nette\ComponentContainer implements IColumn
 
 	/**
 	 * Removes data grid's default filtering.
-	 * @return DataGrid\Columns\Column  provides a fluent interface
+	 * @return Column  provides a fluent interface
 	 */
 	public function removeDefaultFiltering()
 	{
@@ -270,7 +270,7 @@ abstract class Column extends Nette\ComponentContainer implements IColumn
 
 	/**
 	 * Alias for method addTextFilter().
-	 * @return DataGrid\Filters\IColumnFilter
+	 * @return Filters\IColumnFilter
 	 */
 	public function addFilter()
 	{
@@ -280,7 +280,7 @@ abstract class Column extends Nette\ComponentContainer implements IColumn
 
 	/**
 	 * Adds single-line text filter input to data grid.
-	 * @return DataGrid\Filters\IColumnFilter
+	 * @return Filters\IColumnFilter
 	 * @throws \InvalidArgumentException
 	 */
 	public function addTextFilter()
@@ -293,7 +293,7 @@ abstract class Column extends Nette\ComponentContainer implements IColumn
 	/**
 	 * Adds single-line text date filter input to data grid.
 	 * Optional dependency on DatePicker class (@link http://nettephp.com/extras/datepicker)
-	 * @return DataGrid\Filters\IColumnFilter
+	 * @return Filters\IColumnFilter
 	 * @throws \InvalidArgumentException
 	 */
 	public function addDateFilter()
@@ -305,7 +305,7 @@ abstract class Column extends Nette\ComponentContainer implements IColumn
 
 	/**
 	 * Adds check box filter input to data grid.
-	 * @return DataGrid\Filters\IColumnFilter
+	 * @return Filters\IColumnFilter
 	 * @throws \InvalidArgumentException
 	 */
 	public function addCheckboxFilter()
@@ -320,7 +320,7 @@ abstract class Column extends Nette\ComponentContainer implements IColumn
 	 * @param  array   items from which to choose
 	 * @param  bool    add empty first item to selectbox?
 	 * @param  bool    translate all items in selectbox?
-	 * @return DataGrid\Filters\IColumnFilter
+	 * @return Filters\IColumnFilter
 	 * @throws \InvalidArgumentException
 	 */
 	public function addSelectboxFilter($items = NULL, $firstEmpty = TRUE, $translateItems = TRUE)
@@ -332,10 +332,10 @@ abstract class Column extends Nette\ComponentContainer implements IColumn
 
 	/**
 	 * Internal filter adding routine.
-	 * @param  DataGrid\Filters\IColumnFilter $filter
+	 * @param  Filters\IColumnFilter $filter
 	 * @return void
 	 */
-	private function _addFilter(DataGrid\Filters\IColumnFilter $filter)
+	private function _addFilter(Filters\IColumnFilter $filter)
 	{
 		if ($this->hasFilter()) {
 			$this->getComponent('filters')->removeComponent($this->getFilter());

@@ -37,17 +37,17 @@ class TextColumn extends Column
 		}
 
 		// translate & truncate
-		if ($value instanceof Nette\Web\Html) {
+		if ($value instanceof Nette\Utils\Html) {
 			$text = $this->dataGrid->translate($value->getText());
 			if ($this->maxLength != 0) {
-				$text = Nette\String::truncate($text, $this->maxLength);
+				$text = Nette\Utils\Strings::truncate($text, $this->maxLength);
 			}
 			$value->setText($text);
 			$value->title = $this->dataGrid->translate($value->title);
 
 		} else {
 			if ($this->maxLength != 0) {
-				$value = Nette\String::truncate($value, $this->maxLength);
+				$value = Nette\Utils\Strings::truncate($value, $this->maxLength);
 			}
 		}
 

@@ -2,7 +2,7 @@
 
 namespace DataGrid\Renderers;
 use Nette, DataGrid,
-	Nette\Web\Html,
+	Nette\Utils\Html,
 	DataGrid\Columns,
 	DataGrid\Action;
 
@@ -138,7 +138,7 @@ class Conventional extends Nette\Object implements IRenderer
 		}
 
 		if (! $dataGrid->dataSource instanceof DataGrid\DataSources\IDataSource) {
-			throw new \InvalidStateException('Data source is not instance of IDataSource. ' . gettype($this->dataSource) . ' given.');
+			throw new Nette\InvalidStateException('Data source is not instance of IDataSource. ' . gettype($this->dataSource) . ' given.');
 		}
 
 		if ($mode !== NULL) {
@@ -228,7 +228,7 @@ class Conventional extends Nette\Object implements IRenderer
 		$body = Html::el($container->getName() == 'table' ? 'tbody' : NULL);
 
 		if ($this->dataGrid->paginator->itemCount) {
-			$iterator = new Nette\SmartCachingIterator($this->dataGrid->getRows());
+			$iterator = new Nette\Iterators\CachingIterator($this->dataGrid->getRows());
 			foreach ($iterator as $data) {
 				$row = $this->generateContentRow($data);
 				$row->addClass($iterator->isEven() ? $this->getValue('row.content .even') : NULL);
@@ -406,7 +406,7 @@ class Conventional extends Nette\Object implements IRenderer
 
 	/**
 	 * Generates datagrid headrer.
-	 * @return Nette\Web\Html
+	 * @return Html
 	 */
 	protected function generateHeaderRow()
 	{
@@ -473,7 +473,7 @@ class Conventional extends Nette\Object implements IRenderer
 
 	/**
 	 * Generates datagrid filter.
-	 * @return Nette\Web\Html
+	 * @return Html
 	 */
 	protected function generateFilterRow()
 	{
@@ -526,7 +526,7 @@ class Conventional extends Nette\Object implements IRenderer
 	/**
 	 * Generates datagrid row content.
 	 * @param  \Traversable|array data
-	 * @return Nette\Web\Html
+	 * @return Html
 	 */
 	protected function generateContentRow($data)
 	{
@@ -586,7 +586,7 @@ class Conventional extends Nette\Object implements IRenderer
 
 	/**
 	 * Generates datagrid footer.
-	 * @return Nette\Web\Html
+	 * @return Html
 	 */
 	protected function generateFooterRow()
 	{
@@ -623,7 +623,7 @@ class Conventional extends Nette\Object implements IRenderer
 
 	/**
 	 * @param  string
-	 * @return Nette\Web\Html
+	 * @return Html
 	 */
 	protected function getWrapper($name)
 	{

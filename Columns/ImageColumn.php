@@ -20,7 +20,7 @@ class ImageColumn extends TextColumn
 	 */
 	public function __construct($caption = NULL)
 	{
-		throw new \NotImplementedException("Class was not implemented yet.");
+		throw new \Nette\NotImplementedException("Class was not implemented yet.");
 		parent::__construct($caption);
 	}
 }

@@ -236,6 +236,6 @@ class QueryBuilder extends DataSources\Mapped
 
 	public function getFilterItems($column)
 	{
-		throw new \NotImplementedException;
+		throw new \Nette\NotImplementedException;
 	}
 }

@@ -67,12 +67,12 @@ class SelectboxFilter extends ColumnFilter
 
 	/**
 	 * Returns filter's form element.
-	 * @return Nette\Forms\FormControl
+	 * @return Nette\Forms\Controls\BaseControl
 	 */
 	public function getFormControl()
 	{
-		if ($this->element instanceof Nette\Forms\FormControl) return $this->element;
-		$this->element = new Nette\Forms\SelectBox($this->getName(), $this->items);
+		if ($this->element instanceof Nette\Forms\Controls\BaseControl) return $this->element;
+		$this->element = new Nette\Forms\Controls\SelectBox($this->getName(), $this->items);
 
 		// prepare items
 		if ($this->items === NULL) {

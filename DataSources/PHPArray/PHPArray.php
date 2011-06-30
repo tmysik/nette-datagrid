@@ -35,7 +35,7 @@ class PHPArray extends DataGrid\DataSources\DataSource
 
 	public function filter($column, $operation = self::EQUAL, $value = NULL, $chainType = NULL)
 	{
-		throw new \NotImplementedException;
+		throw new Nette\NotImplementedException;
 	}
 
 	public function sort($column, $order = self::ASCENDING)
@@ -65,7 +65,7 @@ class PHPArray extends DataGrid\DataSources\DataSource
 
 	public function getFilterItems($column)
 	{
-		throw new \NotImplementedException;
+		throw new Nette\NotImplementedException;
 	}
 
 	public function getIterator()
