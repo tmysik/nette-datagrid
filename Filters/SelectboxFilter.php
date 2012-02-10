@@ -81,7 +81,7 @@ class SelectboxFilter extends ColumnFilter
 
 		// skip first item?
 		if ($this->firstEmpty) {
-			$this->element->skipFirst('?');
+			$this->element->setPrompt('?');
 		}
 
 		// translate items?
