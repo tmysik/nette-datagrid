@@ -1093,7 +1093,7 @@ class DataGrid extends Nette\Application\UI\Control implements \ArrayAccess
 			throw new Nette\InvalidStateException('No DataGrid\Columns\ActionColumn defined. Use DataGrid\DataGrid::addActionColumn before you add actions.');
 		}
 
-		return $this->currentActionColumn->addAction($this->translate($title), $signal, $icon, $useAjax, $key);
+		return $this->currentActionColumn->addAction($title, $signal, $icon, $useAjax, $key);
 	}
 
 
