@@ -829,7 +829,7 @@ class DataGrid extends Nette\Application\UI\Control implements \ArrayAccess
 		$form->addSubmit('filterSubmit', 'Apply filters');
 
 		$form->addSelect('operations', 'Selected:', $this->operations);
-		$form->addSubmit('operationSubmit', 'Send')->onClick = $this->onOperationSubmit;
+		$form->addSubmit('operationSubmit', 'Perform')->onClick = $this->onOperationSubmit;
 
 		// page input
 		$form->addText('page', 'Page', 1);
