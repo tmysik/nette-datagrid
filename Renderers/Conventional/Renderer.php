@@ -557,13 +557,13 @@ class Conventional extends Nette\Object implements IRenderer
 				$value = '';
 				foreach ($this->dataGrid->getActions() as $action) {
 					if (!is_callable($action->ifDisableCallback) || !callback($action->ifDisableCallback)->invokeArgs(array($data))) {
+						$action->generateLink(array($primary => $data[$primary]));
 						$html = clone $action->getHtml();
 						$html->title($this->dataGrid->translate($html->title));
                         $text = $html->getText();
                         if (\Nette\Utils\Strings::length($text)) {
                             $html->setText($this->dataGrid->translate($text));
                         }
-						$action->generateLink(array($primary => $data[$primary]));
 						$this->onActionRender($html, $data);
 						$value .= $html->render() . ' ';
 					} else
