@@ -2,7 +2,9 @@
 
 namespace DataGrid\Renderers;
 use Nette, DataGrid,
+	Nette\Utils\Arrays,
 	Nette\Utils\Html,
+	Nette\Utils\Strings,
 	DataGrid\Columns,
 	DataGrid\Action;
 
@@ -556,18 +558,26 @@ class Conventional extends Nette\Object implements IRenderer
 			if ($column instanceof Columns\ActionColumn) {
 				$value = '';
 				foreach ($this->dataGrid->getActions() as $action) {
-					if (!is_callable($action->ifDisableCallback) || !callback($action->ifDisableCallback)->invokeArgs(array($data))) {
-						$action->generateLink(array($primary => $data[$primary]));
-						$html = clone $action->getHtml();
-						$html->title($this->dataGrid->translate($html->title));
-                        $text = $html->getText();
-                        if (\Nette\Utils\Strings::length($text)) {
-                            $html->setText($this->dataGrid->translate($text));
+                    $action->generateLink(array($primary => $data[$primary]));
+                    $html = clone $action->getHtml();
+                    $title = $this->dataGrid->translate($html->title);
+                    $html->title($title);
+                    $text = $html->getText();
+                    if (Strings::length($text)) {
+                        $text = $this->dataGrid->translate($text);
+                        $html->setText($text);
+                    }
+					if (is_callable($action->ifDisableCallback) && callback($action->ifDisableCallback)->invokeArgs(array($data))) {
+                        // action disabled
+                        if ($text !== '') {
+                            $html = Html::el('span')->setText($text);
+                        } else {
+                            $html = Arrays::get($html->getChildren(), 0);
                         }
-						$this->onActionRender($html, $data);
-						$value .= $html->render() . ' ';
-					} else
-						$value .= Html::el('span')->setText($this->dataGrid->translate($action->getHtml()->title))->render() . ' ';
+                        $html->title = $title;
+                    }
+                    $this->onActionRender($html, $data);
+                    $value .= $html->render() . ' ';
 				}
 				$cell->addClass('actions');
 
