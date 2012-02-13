@@ -40,10 +40,10 @@ class DateColumn extends TextColumn
 	{
 		if (is_object($value)) {
             if ($value == NULL) {
-                return 'N/A';
+                return $this->getDataGrid()->translate('N/A');
             }
         } elseif ((int)$value == NULL || empty($value)) {
-            return 'N/A';
+            return $this->getDataGrid()->translate('N/A');
         }
 		$value = parent::formatContent($value, $data);
 
