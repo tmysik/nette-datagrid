@@ -1001,12 +1001,34 @@ class DataGrid extends Nette\Application\UI\Control implements \ArrayAccess
 	 * Adds column of date-represented values.
 	 * @param  string  control name
 	 * @param  string  column label
-	 * @param  string  date format
+	 * @param  string  date format, default is RFC 2822 formatted date
 	 * @return DataGrid\Columns\DateColumn
 	 */
-	public function addDateColumn($name, $caption = NULL, $format = '%x')
+	public function addTermColumn($name, $caption = NULL, $format = 'r')
 	{
 		return $this[$name] = new Columns\DateColumn($caption, $format);
+	}
+
+	/**
+	 * Adds column of date-represented (translated 'date.format' key or 'm/d/Y') values.
+	 * @param  string  control name
+	 * @param  string  column label
+	 * @return DataGrid\Columns\DateColumn
+	 */
+	public function addDateColumn($name, $caption = NULL)
+	{
+		return $this->addTermColumn($name, $caption, $this->translator === null ? 'm/d/Y' : $this->translator->translate('date.format'));
+	}
+
+	/**
+	 * Adds column of datetime-represented (translated 'dateTime.format' key or 'm/d/Y H:i') values.
+	 * @param  string  control name
+	 * @param  string  column label
+	 * @return DataGrid\Columns\DateColumn
+	 */
+	public function addDateTimeColumn($name, $caption = NULL)
+	{
+		return $this->addTermColumn($name, $caption, $this->translator === null ? 'm/d/Y H:i' : $this->translator->translate('dateTime.format'));
 	}
 
 
