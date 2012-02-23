@@ -81,7 +81,7 @@ class SelectboxFilter extends ColumnFilter
 
 		// skip first item?
 		if ($this->firstEmpty) {
-			$this->element->setPrompt('?');
+			$this->element->setPrompt($this->translateItems ? '?' : $this->lookup('DataGrid\DataGrid')->translate('?'));
 		}
 
 		// translate items?
