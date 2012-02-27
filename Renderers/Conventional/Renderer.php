@@ -458,7 +458,11 @@ class Conventional extends Nette\Object implements IRenderer
 				$value = (string) Html::el('a')->href($column->getOrderLink())
 					->addClass(Columns\Column::$ajaxClass)->setHtml($text) . $positioner;
 			} else {
-				$value = (string) Html::el('p')->setText($value);
+                if ($column instanceof Columns\ActionColumn) {
+                    // allow html, so do nothing
+                } else {
+                    $value = (string) Html::el('p')->setText($value);
+                }
 			}
 
 			$cell = $this->getWrapper('row.header cell container')->setHtml($value);
