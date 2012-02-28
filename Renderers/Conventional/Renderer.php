@@ -6,7 +6,8 @@ use Nette, DataGrid,
 	Nette\Utils\Html,
 	Nette\Utils\Strings,
 	DataGrid\Columns,
-	DataGrid\Action;
+	DataGrid\Action,
+	DataGrid\GlobalAction;
 
 /**
  * Converts a data grid into the HTML output.
@@ -459,7 +460,7 @@ class Conventional extends Nette\Object implements IRenderer
 					->addClass(Columns\Column::$ajaxClass)->setHtml($text) . $positioner;
 			} else {
                 if ($column instanceof Columns\ActionColumn) {
-                    // allow html, so do nothing
+                    $value = $this->generateActions($cell, true);
                 } else {
                     $value = (string) Html::el('p')->setText($value);
                 }
@@ -560,31 +561,7 @@ class Conventional extends Nette\Object implements IRenderer
 			$cell->attrs = $column->getCellPrototype()->attrs;
 
 			if ($column instanceof Columns\ActionColumn) {
-				$value = '';
-				foreach ($this->dataGrid->getActions() as $action) {
-                    $action->generateLink(array($primary => $data[$primary]));
-                    $html = clone $action->getHtml();
-                    $title = $this->dataGrid->translate($html->title);
-                    $html->title($title);
-                    $text = $html->getText();
-                    if (Strings::length($text)) {
-                        $text = $this->dataGrid->translate($text);
-                        $html->setText($text);
-                    }
-					if (is_callable($action->ifDisableCallback) && callback($action->ifDisableCallback)->invokeArgs(array($data))) {
-                        // action disabled
-                        if ($text !== '') {
-                            $html = Html::el('span')->setText($text);
-                        } else {
-                            $html = Arrays::get($html->getChildren(), 0);
-                        }
-                        $html->title = $title;
-                    }
-                    $this->onActionRender($html, $data);
-                    $value .= $html->render() . ' ';
-				}
-				$cell->addClass('actions');
-
+                $value = $this->generateActions($cell, false, $data);
 			} else {
 				if (!array_key_exists($column->getName(), $data)) {
 					throw new \InvalidArgumentException("Non-existing column '" . $column->getName() . "' in datagrid '" . $this->dataGrid->getName() . "'");
@@ -596,11 +573,52 @@ class Conventional extends Nette\Object implements IRenderer
 			$this->onCellRender($cell, $column->getName(), !($column instanceof Columns\ActionColumn) ? $data[$column->getName()] : $data);
 			$row->add($cell);
 		}
-		unset($form, $primary, $cell, $value, $action);
+		unset($form, $primary, $cell, $value);
 		$this->onRowRender($row, $data);
 		return $row;
 	}
 
+    private function generateActions($cell, $globalActions = true, $data = null) {
+        $value = '';
+        $linkParams = array(
+            $this->dataGrid->keyName => -1,
+        );
+        if ($data !== null) {
+            $primary = $this->dataGrid->keyName;
+            $linkParams = array(
+                $primary => $data[$primary],
+            );
+        }
+        foreach ($this->dataGrid->getActions() as $action) {
+            if (!$globalActions && $action instanceof GlobalAction) {
+                continue;
+            } elseif ($globalActions && !($action instanceof GlobalAction)) {
+                continue;
+            }
+            $action->generateLink($linkParams);
+            $html = clone $action->getHtml();
+            $title = $this->dataGrid->translate($html->title);
+            $html->title($title);
+            $text = $html->getText();
+            if (Strings::length($text)) {
+                $text = $this->dataGrid->translate($text);
+                $html->setText($text);
+            }
+            if (is_callable($action->ifDisableCallback) && callback($action->ifDisableCallback)->invokeArgs(array($data))) {
+                // action disabled
+                if ($text !== '') {
+                    $html = Html::el('span')->setText($text);
+                } else {
+                    $html = Arrays::get($html->getChildren(), 0);
+                }
+                $html->title = $title;
+            }
+            $this->onActionRender($html, $data);
+            $value .= $html->render() . ' ';
+        }
+        $cell->addClass('actions');
+        return $value;
+    }
 
 	/**
 	 * Generates datagrid footer.

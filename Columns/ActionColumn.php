@@ -56,6 +56,24 @@ class ActionColumn extends Column implements \ArrayAccess
 
 
 	/**
+	 * Global action factory.
+     *
+     * Global actions are rendered in the header and has no key (typically "Add" action).
+	 * @param  string  textual title
+	 * @param  string  textual link destination
+	 * @param  Html    element which is added to a generated link
+	 * @param  bool    use ajax? (add class self::$ajaxClass into generated link)
+	 * @param  bool    generate link with argument? (variable $keyName must be defined in data grid)
+	 * @return DataGrid\Action
+	 */
+	public function addGlobalAction($title, $signal, $icon = NULL, $useAjax = FALSE, $type = DataGrid\Action::WITHOUT_KEY)
+	{
+		$action = new DataGrid\GlobalAction($title, $signal, $icon, $useAjax, $type);
+		$this[] = $action;
+		return $action;
+	}
+
+	/**
 	 * Action factory.
 	 * @param  string  textual title
 	 * @param  string  textual link destination

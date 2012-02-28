@@ -1094,6 +1094,25 @@ class DataGrid extends Nette\Application\UI\Control implements \ArrayAccess
 
 
 	/**
+	 * Global action factory.
+     *
+     * Global actions are rendered in the header and has no key (typically "Add" action).
+	 * @param  string  textual title
+	 * @param  string  textual link destination
+	 * @param  Html    element which is added to a generated link
+	 * @param  bool    use ajax? (add class self::$ajaxClass into generated link)
+	 * @return DataGrid\Action
+	 */
+	public function addGlobalAction($title, $signal, $icon = NULL, $useAjax = FALSE)
+	{
+		if (!$this->hasColumns('DataGrid\Columns\ActionColumn')) {
+			throw new Nette\InvalidStateException('No DataGrid\Columns\ActionColumn defined. Use DataGrid\DataGrid::addActionColumn before you add actions.');
+		}
+
+		return $this->currentActionColumn->addGlobalAction($title, $signal, $icon, $useAjax, Action::WITHOUT_KEY);
+	}
+
+	/**
 	 * Action factory.
 	 * @param  string  textual title
 	 * @param  string  textual link destination
