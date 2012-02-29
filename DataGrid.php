@@ -81,7 +81,7 @@ class DataGrid extends Nette\Application\UI\Control implements \ArrayAccess
 	/** @var string */
 	protected $receivedSignal;
 
-	/** @var DataGrid\Columns\ActionColumn */
+	/** @var \DataGrid\Columns\ActionColumn */
 	protected $currentActionColumn;
 
 	/** @var bool  was method render() called? */
@@ -1101,7 +1101,7 @@ class DataGrid extends Nette\Application\UI\Control implements \ArrayAccess
 	 * @param  string  textual link destination
 	 * @param  Html    element which is added to a generated link
 	 * @param  bool    use ajax? (add class self::$ajaxClass into generated link)
-	 * @return DataGrid\Action
+	 * @return GlobalAction
 	 */
 	public function addGlobalAction($title, $signal, $icon = NULL, $useAjax = FALSE)
 	{
