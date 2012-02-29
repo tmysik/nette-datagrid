@@ -236,6 +236,13 @@ class QueryBuilder extends DataSources\Mapped
 
 	public function getFilterItems($column)
 	{
-		throw new \Nette\NotImplementedException;
+		$qb = clone $this->qb;
+		$values = array_map(function($v) use ($column) {
+					return $v[$column];
+				}, $qb->resetDQLPart('orderBy')
+						->setMaxResults(null)
+						->select('DISTINCT(' . $this->mapping[$column] . ') as ' . $column)
+						->getQuery()->getScalarResult());
+		return array_combine($values, $values);
 	}
 }
