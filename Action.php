@@ -34,7 +34,7 @@ class Action extends Nette\ComponentModel\Component implements IAction
 	/** @var Nette\Callback|Closure */
 	public $ifDisableCallback;
 
-        private $linkArgs = array();
+    private $linkArgs = array();
         
 	/**
 	 * Data grid action constructor.
@@ -72,6 +72,9 @@ class Action extends Nette\ComponentModel\Component implements IAction
 		$this->html = $a;
 	}
 
+    public function addLinkArgs(array $args) {
+        $this->linkArgs = array_merge($this->linkArgs, $args);
+    }
 
 	/**
 	 * Generates action's link. (use before data grid is going to be rendered)
@@ -84,7 +87,7 @@ class Action extends Nette\ComponentModel\Component implements IAction
 
 		switch ($this->key) {
 		case self::WITHOUT_KEY:
-			$link = $control->link($this->destination); break;
+			$link = $control->link($this->destination, $this->linkArgs); break;
 		case self::WITH_KEY:
 		default:
 			$key = $this->key == NULL || is_bool($this->key) ? $dataGrid->keyName : $this->key;                    
