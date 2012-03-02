@@ -1072,7 +1072,7 @@ class DataGrid extends Nette\Application\UI\Control implements \ArrayAccess
 	 * @param  bool
 	 * @return DataGrid\Columns\ActionColumn
 	 */
-	public function addActionColumn($name, $caption = NULL, $setAsCurrent = TRUE)
+	public function addActionColumn($name, $caption = '', $setAsCurrent = TRUE)
 	{
 		$column = new Columns\ActionColumn($caption);
 

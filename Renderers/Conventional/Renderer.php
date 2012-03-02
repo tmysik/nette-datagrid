@@ -460,7 +460,7 @@ class Conventional extends Nette\Object implements IRenderer
 					->addClass(Columns\Column::$ajaxClass)->setHtml($text) . $positioner;
 			} else {
                 if ($column instanceof Columns\ActionColumn) {
-                    $value = $this->generateActions($cell, true);
+                    $value = trim($value . ' ' . $this->generateActions($cell, true));
                 } else {
                     $value = (string) Html::el('p')->setText($value);
                 }

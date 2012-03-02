@@ -21,7 +21,7 @@ class ActionColumn extends Column implements \ArrayAccess
 	 * @param  string  column's textual caption
 	 * @return void
 	 */
-	public function __construct($caption = 'Actions')
+	public function __construct($caption = '')
 	{
 		parent::__construct($caption);
 		$this->addComponent(new Nette\ComponentModel\Container, 'actions');
