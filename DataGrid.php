@@ -249,19 +249,44 @@ class DataGrid extends Nette\Application\UI\Control implements \ArrayAccess
 
 	/**
 	 * TODO: throw new DeprecatedException
+	 * Iterates over all datagrid global actions.
+	 * @param  string
+	 * @throws \InvalidArgumentException
+	 * @return \ArrayIterator
+	 */
+	public function getGlobalActions($type = 'DataGrid\GlobalAction') {
+        return $this->getAllActions($type);
+    }
+
+	/**
+	 * TODO: throw new DeprecatedException
 	 * Iterates over all datagrid actions.
 	 * @param  string
 	 * @throws \InvalidArgumentException
 	 * @return \ArrayIterator
 	 */
-	public function getActions($type = 'DataGrid\IAction')
+	public function getActions($type = 'DataGrid\IAction') {
+        return $this->getAllActions($type, 'DataGrid\GlobalAction');
+	}
+
+	/**
+	 * TODO: throw new DeprecatedException
+	 * Iterates over all datagrid actions.
+	 * @param  string
+	 * @throws \InvalidArgumentException
+	 * @return \ArrayIterator
+	 */
+	public function getAllActions($type = 'DataGrid\IAction', $notType = null)
 	{
 		$actions = new \ArrayObject();
 		foreach ($this->getColumns('DataGrid\Columns\ActionColumn') as $column) {
 			if ($column->hasAction()) {
 				foreach ($column->getActions() as $action) {
 					if ($action instanceof $type) {
-						$actions->append($action);
+                        if ($notType === null
+                                || ($notType !== null && !($action instanceof $notType))) {
+                            $actions->append($action);
+                        }
 					}
 				}
 			}

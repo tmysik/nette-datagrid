@@ -460,7 +460,7 @@ class Conventional extends Nette\Object implements IRenderer
 					->addClass(Columns\Column::$ajaxClass)->setHtml($text) . $positioner;
 			} else {
                 if ($column instanceof Columns\ActionColumn) {
-                    $value = trim($value . ' ' . $this->generateActions($cell, true));
+                    $value = trim($value . ' ' . $this->generateActions($cell, $this->dataGrid->getGlobalActions()));
                 } else {
                     $value = (string) Html::el('p')->setText($value);
                 }
@@ -561,7 +561,7 @@ class Conventional extends Nette\Object implements IRenderer
 			$cell->attrs = $column->getCellPrototype()->attrs;
 
 			if ($column instanceof Columns\ActionColumn) {
-                $value = $this->generateActions($cell, false, $data);
+                $value = $this->generateActions($cell, $this->dataGrid->getActions(), $data);
 			} else {
 				if (!array_key_exists($column->getName(), $data)) {
 					throw new \InvalidArgumentException("Non-existing column '" . $column->getName() . "' in datagrid '" . $this->dataGrid->getName() . "'");
@@ -578,7 +578,7 @@ class Conventional extends Nette\Object implements IRenderer
 		return $row;
 	}
 
-    private function generateActions($cell, $globalActions = true, $data = null) {
+    private function generateActions($cell, \ArrayIterator $actions, $data = null) {
         $value = '';
         $linkParams = array(
             $this->dataGrid->keyName => -1,
@@ -589,12 +589,7 @@ class Conventional extends Nette\Object implements IRenderer
                 $primary => $data[$primary],
             );
         }
-        foreach ($this->dataGrid->getActions() as $action) {
-            if (!$globalActions && $action instanceof GlobalAction) {
-                continue;
-            } elseif ($globalActions && !($action instanceof GlobalAction)) {
-                continue;
-            }
+        foreach ($actions as $action) {
             $action->generateLink($linkParams);
             $html = clone $action->getHtml();
             $title = $this->dataGrid->translate($html->title);
