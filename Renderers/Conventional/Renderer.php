@@ -239,6 +239,9 @@ class Conventional extends Nette\Object implements IRenderer
 			}
 		} else {
 			$size = count($this->dataGrid->getColumns());
+            if ($this->dataGrid->hasOperations()) {
+                ++$size;
+            }
 			$row = $this->getWrapper('row.content container');
 			$cell = $this->getWrapper('row.content cell container');
 			$cell->colspan = $size;
