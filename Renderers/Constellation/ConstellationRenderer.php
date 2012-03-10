@@ -23,22 +23,12 @@ class ConstellationRenderer extends Nette\Object implements IRenderer {
 
     /** @var array  of HTML tags */
     public $wrappers = array(
-        'datagrid' => array(
-            'container' => 'table class="table datagrid"',
-        ),
         'form' => array(
             '.class' => 'form datagrid',
         ),
         'error' => array(
             'container' => 'ul class=error',
             'item' => 'li',
-        ),
-        'row.header' => array(
-            'container' => 'tr class=header',
-            'cell' => array(
-                'container' => 'th', // .checker, .action
-                '.active' => 'active',
-            ),
         ),
         'row.filter' => array(
             'container' => 'tr class=filters',
@@ -187,7 +177,9 @@ class ConstellationRenderer extends Nette\Object implements IRenderer {
      * @return string
      */
     public function renderNavigator() {
-        return $this->renderPaginator();
+        $container = Html::el('div')
+                ->class('block-controls');
+        return $container->setHtml($this->renderPaginator())->render();
     }
 
     public function renderPaginator() {
@@ -285,10 +277,12 @@ class ConstellationRenderer extends Nette\Object implements IRenderer {
      * @return string
      */
     public function renderTable() {
-        $container = $this->getWrapper('datagrid container');
+        $container = Html::el('table')
+                        ->class('table datagrid')
+                        ->cellspacing('0');
 
         // headers
-        $header = Html::el($container->getName() == 'table' ? 'thead' : NULL);
+        $header = Html::el('thead');
         $header->add($this->generateHeaderRow());
 
         if ($this->dataGrid->hasFilters()) {
@@ -296,7 +290,7 @@ class ConstellationRenderer extends Nette\Object implements IRenderer {
         }
 
         // body
-        $body = Html::el($container->getName() == 'table' ? 'tbody' : NULL);
+        $body = Html::el('tbody');
 
         if ($this->dataGrid->paginator->itemCount) {
             $iterator = new Nette\Iterators\CachingIterator($this->dataGrid->getRows());
@@ -307,6 +301,9 @@ class ConstellationRenderer extends Nette\Object implements IRenderer {
             }
         } else {
             $size = count($this->dataGrid->getColumns());
+            if ($this->dataGrid->hasOperations()) {
+                ++$size;
+            }
             $row = $this->getWrapper('row.content container');
             $cell = $this->getWrapper('row.content cell container');
             $cell->colspan = $size;
@@ -318,7 +315,10 @@ class ConstellationRenderer extends Nette\Object implements IRenderer {
 
         $container->add($header);
         $container->add($body);
-        return $container->render(0);
+        return Html::el('div')
+                ->class('no-margin')
+                ->add($container)
+                ->render(0);
     }
 
     /**
@@ -373,12 +373,14 @@ class ConstellationRenderer extends Nette\Object implements IRenderer {
      * @return Html
      */
     protected function generateHeaderRow() {
-        $row = $this->getWrapper('row.header container');
+        $row = Html::el('tr');
 
         // checker
         if ($this->dataGrid->hasOperations()) {
-            $cell = $this->getWrapper('row.header cell container');
-            $cell->addClass('checker');
+            $cell = Html::el('th')
+                    ->class('black-cell')
+                    ->add(Html::el('span')
+                            ->class('loading'));
 
             if ($this->dataGrid->hasFilters()) {
                 $cell->rowspan(2);
@@ -404,31 +406,36 @@ class ConstellationRenderer extends Nette\Object implements IRenderer {
                     $a = $d = FALSE;
                 }
 
-                if (count($list) > 1 && isset($list[$column->getName()])) {
-                    $text .= Html::el('span')->setHtml($list[$column->getName()][1]);
-                }
+                // sort element
+                $sort = Html::el('span')
+                        ->class('column-sort');
+                $linkUp = Html::el('a')
+                        ->title($this->dataGrid->translate('Sort up'))
+                        ->class('sort-up')
+                        ->addClass(Columns\Column::$ajaxClass)
+                        ->addClass($a ? 'active' : '')
+                        ->href($column->getOrderLink('a'));
+                $linkDown = Html::el('a')
+                        ->title($this->dataGrid->translate('Sort down'))
+                        ->class('sort-down')
+                        ->addClass(Columns\Column::$ajaxClass)
+                        ->addClass($d ? 'active' : '')
+                        ->href($column->getOrderLink('d'));
 
-                $up = clone $down = Html::el('a')->addClass(Columns\Column::$ajaxClass);
-                $up->addClass($a ? 'active' : '')->href($column->getOrderLink('a'))
-                        ->add(Html::el('span')->class('up'));
-                $down->addClass($d ? 'active' : '')->href($column->getOrderLink('d'))
-                        ->add(Html::el('span')->class('down'));
-                $positioner = Html::el('span')->class('positioner')->add($up)->add($down);
-                $active = $a || $d;
-
-                $value = (string) Html::el('a')->href($column->getOrderLink())
-                                ->addClass(Columns\Column::$ajaxClass)->setHtml($text).$positioner;
+                // NB - <ENTER> after sort -> indentation 0 and not 8
+                $value = $sort
+                        ->add($linkUp)
+                        ->add($linkDown)
+                        ->render() . $value;
             } else {
                 if ($column instanceof Columns\ActionColumn) {
                     $value = trim($value.' '.$this->generateActions($cell, $this->dataGrid->getGlobalActions()));
                 } else {
-                    $value = (string) Html::el('p')->setText($value);
+                    $value = $value;
                 }
             }
 
-            $cell = $this->getWrapper('row.header cell container')->setHtml($value);
-            $cell->attrs = $column->getHeaderPrototype()->attrs;
-            $cell->addClass(isset($active) && $active == TRUE ? $this->getValue('row.header cell .active') : NULL);
+            $cell = Html::el('th')->scope('col')->setHtml($value);
             if ($column instanceof Columns\ActionColumn)
                 $cell->addClass('actions');
 
