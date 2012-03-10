@@ -80,7 +80,10 @@ class ConstellationRenderer extends Nette\Object implements IRenderer {
             'container' => 'span class=operations',
         ),
         'info' => array(
-            'container' => 'span class=grid-info',
+            'container' => 'ul class="message no-margin"',
+            'item' => array(
+                'container' => 'li',
+            ),
         ),
     );
     /** @var string */
@@ -88,7 +91,7 @@ class ConstellationRenderer extends Nette\Object implements IRenderer {
     /** @var string */
     public $paginatorFormat = '%label% %input% of %count%';
     /** @var string */
-    public $infoFormat = 'Items %from% - %to% of %count% | Display: %selectbox% | %reset%';
+    public $infoFormat = 'Items %from% - %to% out of %count%';
     /** @var string  template file */
     public $file;
     /** @var DataGrid\DataGrid */
@@ -136,7 +139,7 @@ class ConstellationRenderer extends Nette\Object implements IRenderer {
      * Renders datagrid form begin.
      * @return string
      */
-    public function renderBegin() {
+    public function renderFormBegin() {
         $form = $this->dataGrid->getForm(TRUE);
         foreach ($form->getControls() as $control) {
             $control->setOption('rendered', FALSE);
@@ -149,7 +152,7 @@ class ConstellationRenderer extends Nette\Object implements IRenderer {
      * Renders datagrid form end.
      * @return string
      */
-    public function renderEnd() {
+    public function renderFormEnd() {
         $form = $this->dataGrid->getForm(TRUE);
         return $form->getElementPrototype()->endTag()."\n";
     }
@@ -180,62 +183,13 @@ class ConstellationRenderer extends Nette\Object implements IRenderer {
     }
 
     /**
-     * Renders data grid body.
-     * @return string
-     */
-    public function renderBody() {
-        $container = $this->getWrapper('datagrid container');
-
-        // headers
-        $header = Html::el($container->getName() == 'table' ? 'thead' : NULL);
-        $header->add($this->generateHeaderRow());
-
-        if ($this->dataGrid->hasFilters()) {
-            $header->add($this->generateFilterRow());
-        }
-
-        // footer
-        $footer = Html::el($container->getName() == 'table' ? 'tfoot' : NULL);
-        $footer->add($this->generateFooterRow());
-
-        // body
-        $body = Html::el($container->getName() == 'table' ? 'tbody' : NULL);
-
-        if ($this->dataGrid->paginator->itemCount) {
-            $iterator = new Nette\Iterators\CachingIterator($this->dataGrid->getRows());
-            foreach ($iterator as $data) {
-                $row = $this->generateContentRow($data);
-                $row->addClass($iterator->isEven() ? $this->getValue('row.content .even') : NULL);
-                $body->add($row);
-            }
-        } else {
-            $size = count($this->dataGrid->getColumns());
-            $row = $this->getWrapper('row.content container');
-            $cell = $this->getWrapper('row.content cell container');
-            $cell->colspan = $size;
-            $cell->style = 'text-align:center';
-            $cell->add(Html::el('div')->setText($this->dataGrid->translate('No data were found')));
-            $row->add($cell);
-            $body->add($row);
-        }
-
-        if ($container->getName() == 'table') {
-            $container->add($header);
-            $container->add($footer);
-            $container->add($body);
-        } else {
-            $container->add($header);
-            $container->add($body);
-            $container->add($footer);
-        }
-
-        return $container->render(0);
-    }
-
-    /**
      * Renders data grid paginator.
      * @return string
      */
+    public function renderNavigator() {
+        return $this->renderPaginator();
+    }
+
     public function renderPaginator() {
         $paginator = $this->dataGrid->paginator;
         if ($paginator->pageCount <= 1)
@@ -327,6 +281,89 @@ class ConstellationRenderer extends Nette\Object implements IRenderer {
     }
 
     /**
+     * Renders data grid body.
+     * @return string
+     */
+    public function renderTable() {
+        $container = $this->getWrapper('datagrid container');
+
+        // headers
+        $header = Html::el($container->getName() == 'table' ? 'thead' : NULL);
+        $header->add($this->generateHeaderRow());
+
+        if ($this->dataGrid->hasFilters()) {
+            $header->add($this->generateFilterRow());
+        }
+
+        // footer
+        $footer = Html::el($container->getName() == 'table' ? 'tfoot' : NULL);
+        $footer->add($this->generateFooterRow());
+
+        // body
+        $body = Html::el($container->getName() == 'table' ? 'tbody' : NULL);
+
+        if ($this->dataGrid->paginator->itemCount) {
+            $iterator = new Nette\Iterators\CachingIterator($this->dataGrid->getRows());
+            foreach ($iterator as $data) {
+                $row = $this->generateContentRow($data);
+                $row->addClass($iterator->isEven() ? $this->getValue('row.content .even') : NULL);
+                $body->add($row);
+            }
+        } else {
+            $size = count($this->dataGrid->getColumns());
+            $row = $this->getWrapper('row.content container');
+            $cell = $this->getWrapper('row.content cell container');
+            $cell->colspan = $size;
+            $cell->style = 'text-align:center';
+            $cell->add(Html::el('div')->setText($this->dataGrid->translate('No data were found')));
+            $row->add($cell);
+            $body->add($row);
+        }
+
+        if ($container->getName() == 'table') {
+            $container->add($header);
+            $container->add($footer);
+            $container->add($body);
+        } else {
+            $container->add($header);
+            $container->add($body);
+            $container->add($footer);
+        }
+
+        return $container->render(0);
+    }
+
+    /**
+     * Renders info about data grid.
+     * @return string
+     */
+    public function renderInfo() {
+        $container = $this->getWrapper('info container');
+        $item = $this->getWrapper('info item container');
+        $paginator = $this->dataGrid->paginator;
+        $form = $this->dataGrid->getForm(TRUE);
+
+        $stateSubmit = $form['resetSubmit']->control;
+        $stateSubmit->title($stateSubmit->value);
+
+        $this->infoFormat = $this->dataGrid->translate($this->infoFormat);
+        $html = str_replace(
+                array(
+            '%from%',
+            '%to%',
+            '%count%',
+                ), array(
+            $paginator->itemCount != 0 ? $paginator->offset + 1 : $paginator->offset,
+            $paginator->offset + $paginator->length,
+            $paginator->itemCount,
+                ), $this->infoFormat
+        );
+
+        $container->setHtml($item->setHtml(trim($html)));
+        return $container->render();
+    }
+
+    /**
      * Renders data grid operation controls.
      * @return string
      */
@@ -340,39 +377,6 @@ class ConstellationRenderer extends Nette\Object implements IRenderer {
         $container->add($form['operations']->control);
         $container->add($form['operationSubmit']->control->title($form['operationSubmit']->control->value));
 
-        return $container->render();
-    }
-
-    /**
-     * Renders info about data grid.
-     * @return string
-     */
-    public function renderInfo() {
-        $container = $this->getWrapper('info container');
-        $paginator = $this->dataGrid->paginator;
-        $form = $this->dataGrid->getForm(TRUE);
-
-        $stateSubmit = $form['resetSubmit']->control;
-        $stateSubmit->title($stateSubmit->value);
-
-        $this->infoFormat = $this->dataGrid->translate($this->infoFormat);
-        $html = str_replace(
-                array(
-            '%from%',
-            '%to%',
-            '%count%',
-            '%selectbox%',
-            '%reset%'
-                ), array(
-            $paginator->itemCount != 0 ? $paginator->offset + 1 : $paginator->offset,
-            $paginator->offset + $paginator->length,
-            $paginator->itemCount,
-            $form['items']->control.$form['itemsSubmit']->control->title($form['itemsSubmit']->control->value),
-            ($this->dataGrid->rememberState ? $stateSubmit : ''),
-                ), $this->infoFormat
-        );
-
-        $container->setHtml(trim($html, ' | '));
         return $container->render();
     }
 

@@ -8,9 +8,12 @@
         </ul>
     {/foreach}
 
-    {widget $control begin}
+    {widget $control formBegin}
     {widget $control errors}
-    {widget $control body}
-    {widget $control end}
+    {widget $control navigator}
+    {widget $control table}
+    {widget $control info}
+    {widget $control operations}
+    {widget $control formEnd}
 
 {/snippet}
