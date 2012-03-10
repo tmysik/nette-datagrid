@@ -295,10 +295,6 @@ class ConstellationRenderer extends Nette\Object implements IRenderer {
             $header->add($this->generateFilterRow());
         }
 
-        // footer
-        $footer = Html::el($container->getName() == 'table' ? 'tfoot' : NULL);
-        $footer->add($this->generateFooterRow());
-
         // body
         $body = Html::el($container->getName() == 'table' ? 'tbody' : NULL);
 
@@ -320,16 +316,8 @@ class ConstellationRenderer extends Nette\Object implements IRenderer {
             $body->add($row);
         }
 
-        if ($container->getName() == 'table') {
-            $container->add($header);
-            $container->add($footer);
-            $container->add($body);
-        } else {
-            $container->add($header);
-            $container->add($body);
-            $container->add($footer);
-        }
-
+        $container->add($header);
+        $container->add($body);
         return $container->render(0);
     }
 
@@ -359,7 +347,7 @@ class ConstellationRenderer extends Nette\Object implements IRenderer {
                 ), $this->infoFormat
         );
 
-        $container->setHtml($item->setHtml(trim($html)));
+        $container->add($item->setHtml(trim($html)));
         return $container->render();
     }
 
