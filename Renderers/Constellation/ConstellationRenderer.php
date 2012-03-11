@@ -30,17 +30,6 @@ class ConstellationRenderer extends Nette\Object implements IRenderer {
             'container' => 'ul class=error',
             'item' => 'li',
         ),
-        'row.filter' => array(
-            'container' => 'tr class=filters',
-            'cell' => array(
-                'container' => 'td', // .action
-            ),
-            'control' => array(
-                '.input' => 'text',
-                '.select' => 'select',
-                '.submit' => 'button',
-            ),
-        ),
         'row.content' => array(
             'container' => 'tr', // .even, .selected
             '.even' => 'even',
@@ -390,6 +379,7 @@ class ConstellationRenderer extends Nette\Object implements IRenderer {
 
         // headers
         foreach ($this->dataGrid->getColumns() as $column) {
+            $cell = Html::el('th')->scope('col');
             $value = $text = $column->caption;
 
             if ($column->isOrderable()) {
@@ -434,10 +424,7 @@ class ConstellationRenderer extends Nette\Object implements IRenderer {
                     $value = $value;
                 }
             }
-
-            $cell = Html::el('th')->scope('col')->setHtml($value);
-            if ($column instanceof Columns\ActionColumn)
-                $cell->addClass('actions');
+            $cell->setHtml($value);
 
             $row->add($cell);
         }
@@ -450,15 +437,15 @@ class ConstellationRenderer extends Nette\Object implements IRenderer {
      * @return Html
      */
     protected function generateFilterRow() {
-        $row = $this->getWrapper('row.filter container');
+        $row = Html::el('tr')->class('filters');
         $form = $this->dataGrid->getForm(TRUE);
 
         $submitControl = $form['filterSubmit']->control;
-        $submitControl->addClass($this->getValue('row.filter control .submit'));
+        $submitControl->addClass('button');
         $submitControl->title = $submitControl->value;
 
         foreach ($this->dataGrid->getColumns() as $column) {
-            $cell = $this->getWrapper('row.filter cell container');
+            $cell = Html::el('td');
 
             // TODO: set on filters too?
             $cell->attrs = $column->getCellPrototype()->attrs;
@@ -470,12 +457,12 @@ class ConstellationRenderer extends Nette\Object implements IRenderer {
                 if ($column->hasFilter()) {
                     $filter = $column->getFilter();
                     if ($filter instanceof Filters\SelectboxFilter) {
-                        $class = $this->getValue('row.filter control .select');
+                        $class = 'select';
                     } else {
-                        $class = $this->getValue('row.filter control .input');
+                        $class = 'text';
                     }
                     $control = $filter->getFormControl()->control;
-                    $control->addClass($class);
+                    $control->addClass($class)->addClass('full-width');
                     $value = (string) $control;
                 } else {
                     $value = '';
@@ -574,7 +561,7 @@ class ConstellationRenderer extends Nette\Object implements IRenderer {
             $this->onActionRender($html, $data);
             $value .= $html->render().' ';
         }
-        $cell->addClass('actions');
+        $cell->addClass('table-actions');
         return $value;
     }
 
