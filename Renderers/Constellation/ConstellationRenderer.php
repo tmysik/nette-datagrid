@@ -43,8 +43,6 @@ class ConstellationRenderer extends Nette\Object implements IRenderer {
         ),
     );
     /** @var string */
-    public $footerFormat = '%operations% %paginator% %info%';
-    /** @var string */
     public $paginatorFormat = '%label% %input% of %count%';
     /** @var string */
     public $infoFormat = 'Items %from% - %to% out of %count%';
@@ -325,15 +323,26 @@ class ConstellationRenderer extends Nette\Object implements IRenderer {
      * @return string
      */
     public function renderOperations() {
-        if (!$this->dataGrid->hasOperations())
-            return '';
-
-        $container = $this->getWrapper('operations container');
+        $container = Html::el('div')->class('block-footer');
         $form = $this->dataGrid->getForm(TRUE);
-        $container->add($form['operations']->label);
-        $container->add($form['operations']->control);
-        $container->add($form['operationSubmit']->control->title($form['operationSubmit']->control->value));
 
+        // page size
+        $pageSize = Html::el('div')->class('float-right')
+                ->setHtml(str_replace(
+                        array('%selectbox%', '%submit%'),
+                        array($form['items']->control, $form['itemsSubmit']->control->title($form['itemsSubmit']->control->value)),
+                        $this->dataGrid->translate('Show %selectbox% entries %submit%')));
+        $container->add($pageSize);
+
+        // operations
+        if ($this->dataGrid->hasOperations()) {
+            $form = $this->dataGrid->getForm(TRUE);
+            $container->add($form['operations']->label);
+            $container->add($form['operations']->control);
+            $container->add($form['operationSubmit']->control->title($form['operationSubmit']->control->value));
+        }
+
+        $container->add(Html::el('div')->class('clear'));
         return $container->render();
     }
 
@@ -545,40 +554,6 @@ class ConstellationRenderer extends Nette\Object implements IRenderer {
         }
         $cell->addClass('table-actions');
         return $value;
-    }
-
-    /**
-     * Generates datagrid footer.
-     * @return Html
-     */
-    protected function generateFooterRow() {
-        $form = $this->dataGrid->getForm(TRUE);
-        $paginator = $this->dataGrid->paginator;
-        $row = $this->getWrapper('row.footer container');
-
-        $count = count($this->dataGrid->getColumns());
-        if ($this->dataGrid->hasOperations())
-            $count++;
-
-        $cell = $this->getWrapper('row.footer cell container');
-        $cell->colspan($count);
-
-        $this->footerFormat = $this->dataGrid->translate($this->footerFormat);
-        $html = str_replace(
-                array(
-            '%operations%',
-            '%paginator%',
-            '%info%',
-                ), array(
-            $this->renderOperations(),
-            $this->renderPaginator(),
-            $this->renderInfo(),
-                ), $this->footerFormat
-        );
-        $cell->setHtml($html);
-        $row->add($cell);
-
-        return $row;
     }
 
     /**
