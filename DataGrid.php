@@ -1055,7 +1055,7 @@ class DataGrid extends Nette\Application\UI\Control implements \ArrayAccess
 	 * Adds column of boolean values (represented by checkboxes).
 	 * @param  string  control name
 	 * @param  string  column label
-	 * @return DataGrid\Columns\CheckboxColumn
+	 * @return \DataGrid\Columns\CheckboxColumn
 	 */
 	public function addCheckboxColumn($name, $caption = NULL)
 	{
