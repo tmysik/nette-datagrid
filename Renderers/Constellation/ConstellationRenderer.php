@@ -547,6 +547,8 @@ class ConstellationRenderer extends Nette\Object implements IRenderer {
                 }
                 $html->title = $title;
             }
+            // XXX
+            $html->setHtml(Html::el('span')->class('icon icon-' . strtolower(preg_replace('%([A-Z])%', '-\\1', $action->destination))));
             $this->onActionRender($html, $data);
             $value .= $html->render().' ';
         }
