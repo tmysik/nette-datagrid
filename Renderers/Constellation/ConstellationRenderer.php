@@ -23,10 +23,6 @@ class ConstellationRenderer extends Nette\Object implements IRenderer {
 
     /** @var array  of HTML tags */
     public $wrappers = array(
-        'error' => array(
-            'container' => 'ul class=error',
-            'item' => 'li',
-        ),
         'row.content' => array(
             'container' => 'tr', // .even, .selected
             '.even' => 'even',
@@ -142,20 +138,22 @@ class ConstellationRenderer extends Nette\Object implements IRenderer {
 
         $errors = $form->getErrors();
         if (count($errors)) {
-            $ul = $this->getWrapper('error container');
-            $li = $this->getWrapper('error item');
-
+            $out = '';
             foreach ($errors as $error) {
-                $item = clone $li;
+                $container = Html::el('ul')->class('message error');
+                $item = Html::el('li');
                 if ($error instanceof Html) {
                     $item->add($error);
                 } else {
                     $item->setText($error);
                 }
-                $ul->add($item);
+                $container->add($item);
+                // $container->add(Html::el('li')->class('close-bt'));
+                $out .= $container->render(0);
             }
-            return "\n".$ul->render(0);
+            return "\n" . $out;
         }
+        return '';
     }
 
     /**
