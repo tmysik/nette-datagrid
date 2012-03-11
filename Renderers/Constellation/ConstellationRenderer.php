@@ -23,9 +23,6 @@ class ConstellationRenderer extends Nette\Object implements IRenderer {
 
     /** @var array  of HTML tags */
     public $wrappers = array(
-        'form' => array(
-            '.class' => 'form datagrid',
-        ),
         'error' => array(
             'container' => 'ul class=error',
             'item' => 'li',
@@ -123,7 +120,7 @@ class ConstellationRenderer extends Nette\Object implements IRenderer {
         foreach ($form->getControls() as $control) {
             $control->setOption('rendered', FALSE);
         }
-        $form->getElementPrototype()->addClass($this->getValue('form .class'));
+        $form->getElementPrototype()->addClass('form datagrid');
         return $form->getElementPrototype()->startTag();
     }
 
