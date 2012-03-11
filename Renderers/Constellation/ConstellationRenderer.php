@@ -21,31 +21,6 @@ use Nette,
  */
 class ConstellationRenderer extends Nette\Object implements IRenderer {
 
-    /** @var array  of HTML tags */
-    public $wrappers = array(
-        'row.footer' => array(
-            'container' => 'tr class=footer',
-            'cell' => array(
-                'container' => 'td',
-            ),
-        ),
-        'paginator' => array(
-            'container' => 'span class=paginator',
-            'button' => array(
-                'first' => 'span class="paginator-first"',
-                'prev' => 'span class="paginator-prev"',
-                'next' => 'span class="paginator-next"',
-                'last' => 'span class="paginator-last"',
-            ),
-            'controls' => array(
-                'container' => 'span class=paginator-controls',
-            ),
-        ),
-    );
-    /** @var string */
-    public $paginatorFormat = '%label% %input% of %count%';
-    /** @var string */
-    public $infoFormat = 'Items %from% - %to% out of %count%';
     /** @var string  template file */
     public $file;
     /** @var DataGrid\DataGrid */
@@ -154,88 +129,62 @@ class ConstellationRenderer extends Nette\Object implements IRenderer {
             return Html::el('p')->setHtml('&nbsp;')->render();
         }
 
-        $container = $this->getWrapper('paginator container');
-        $translator = $this->dataGrid->getTranslator();
+        $container = Html::el('ul')->class('controls-buttons');
+        $item = Html::el('li');
 
         $a = Html::el('a');
         $a->addClass(Action::$ajaxClass);
 
-        // to-first button
-        $first = $this->getWrapper('paginator button first');
-        $title = $this->dataGrid->translate('First');
-        $link = clone $a->href($this->dataGrid->link('page', 1));
-        if ($first instanceof Html) {
-            if ($paginator->isFirst())
-                $first->addClass('inactive');
-            else
-                $first = $link->add($first);
-            $first->title($title);
-        } else {
-            $first = $link->setText($title);
-        }
-        $container->add($first);
-
-        // previous button
-        $prev = $this->getWrapper('paginator button prev');
+        // prev
+        $prev = clone $item;
+        $prev->addClass('prev');
         $title = $this->dataGrid->translate('Previous');
         $link = clone $a->href($this->dataGrid->link('page', $paginator->page - 1));
-        if ($prev instanceof Html) {
-            if ($paginator->isFirst())
-                $prev->addClass('inactive');
-            else
-                $prev = $link->add($prev);
-            $prev->title($title);
-        } else {
-            $prev = $link->setText($title);
-        }
+        $link->title($title);
+        $link->setHtml('<img src="images/icons/fugue/navigation-180.png" width="16" height="16">&nbsp;' . $title);
+        $prev->add($link);
         $container->add($prev);
-
-        // page input
-        $controls = $this->getWrapper('paginator controls container');
-        $form = $this->dataGrid->getForm(TRUE);
-        $format = $this->dataGrid->translate($this->paginatorFormat);
-        $html = str_replace(
-                array('%label%', '%input%', '%count%'), array($form['page']->label, $form['page']->control, $paginator->pageCount), $format
-        );
-        $controls->add(Html::el()->setHtml($html));
-        $container->add($controls);
-
-        // next button
-        $next = $this->getWrapper('paginator button next');
+        // pages
+        for ($i = 1; $i <= $paginator->pageCount; ++$i) {
+            $page = clone $item;
+            $page->addClass('page');
+            $title = $this->dataGrid->translate('Page %d', $i);
+            $link = clone $a->href($this->dataGrid->link('page', $i - 1));
+            $link->title($title);
+            $link->setText($i);
+            if ($i == $paginator->page) {
+                $link->addClass('current');
+            }
+            $page->add($link);
+            $container->add($page);
+        }
+        // next
+        $next = clone $item;
+        $next->addClass('next');
         $title = $this->dataGrid->translate('Next');
         $link = clone $a->href($this->dataGrid->link('page', $paginator->page + 1));
-        if ($next instanceof Html) {
-            if ($paginator->isLast())
-                $next->addClass('inactive');
-            else
-                $next = $link->add($next);
-            $next->title($title);
-        } else {
-            $next = $link->setText($title);
-        }
+        $link->title($title);
+        $link->setHtml('<img src="images/icons/fugue/navigation.png" width="16" height="16">&nbsp;' . $title);
+        $next->add($link);
         $container->add($next);
 
-        // to-last button
-        $last = $this->getWrapper('paginator button last');
-        $title = $this->dataGrid->translate('Last');
-        $link = clone $a->href($this->dataGrid->link('page', $paginator->pageCount));
-        if ($last instanceof Html) {
-            if ($paginator->isLast())
-                $last->addClass('inactive');
-            else
-                $last = $link->add($last);
-            $last->title($title);
-        } else {
-            $last = $link->setText($title);
-        }
-        $container->add($last);
+        // page input
+//        $controls = $this->getWrapper('paginator controls container');
+//        $form = $this->dataGrid->getForm(TRUE);
+//        $pageInput = $this->dataGrid->translate('Page %input% of %count%');
+//        $html = str_replace(
+//                array('%input%', '%count%'),
+//                array($form['page']->control, $paginator->pageCount),
+//                $pageInput
+//        );
+//        $controls->add(Html::el()->setHtml($html));
+//        $container->add($controls);
 
         // page change submit
-        $control = $form['pageSubmit']->control;
-        $control->title = $control->value;
-        $container->add($control);
+//        $control = $form['pageSubmit']->control;
+//        $control->title = $control->value = $this->dataGrid->translate('Change');
+//        $container->add($control);
 
-        unset($first, $prev, $next, $last, $button, $paginator, $link, $a, $form);
         return $container->render();
     }
 
@@ -296,22 +245,11 @@ class ConstellationRenderer extends Nette\Object implements IRenderer {
         $container = Html::el('ul')->class('message no-margin');
         $item = Html::el('li');
         $paginator = $this->dataGrid->paginator;
-        $form = $this->dataGrid->getForm(TRUE);
 
-        $stateSubmit = $form['resetSubmit']->control;
-        $stateSubmit->title($stateSubmit->value);
-
-        $this->infoFormat = $this->dataGrid->translate($this->infoFormat);
         $html = str_replace(
-                array(
-            '%from%',
-            '%to%',
-            '%count%',
-                ), array(
-            $paginator->itemCount != 0 ? $paginator->offset + 1 : $paginator->offset,
-            $paginator->offset + $paginator->length,
-            $paginator->itemCount,
-                ), $this->infoFormat
+                array('%from%', '%to%', '%count%'),
+                array($paginator->itemCount != 0 ? $paginator->offset + 1 : $paginator->offset, $paginator->offset + $paginator->length, $paginator->itemCount),
+                $this->dataGrid->translate('Items %from% - %to% out of %count%')
         );
 
         $container->add($item->setHtml(trim($html)));
@@ -336,8 +274,11 @@ class ConstellationRenderer extends Nette\Object implements IRenderer {
 
         // operations
         if ($this->dataGrid->hasOperations()) {
-            $form = $this->dataGrid->getForm(TRUE);
-            $container->add($form['operations']->label);
+            $container->add(Html::el('div')->class('datagrid-operations-picto'));
+            // XXX
+//            <a href="#" class="button">Select All</a>
+//            <a href="#" class="button">Unselect All</a>
+//            <span class="sep"></span>
             $container->add($form['operations']->control);
             $container->add($form['operationSubmit']->control->title($form['operationSubmit']->control->value));
         }
@@ -554,30 +495,6 @@ class ConstellationRenderer extends Nette\Object implements IRenderer {
         }
         $cell->addClass('table-actions');
         return $value;
-    }
-
-    /**
-     * @param  string
-     * @return Html
-     */
-    // XXX REMOVE!
-    protected function getWrapper($name) {
-        $data = $this->getValue($name);
-        return $data instanceof Html ? clone $data : Html::el($data);
-    }
-
-    /**
-     * @param  string
-     * @return string
-     */
-    protected function getValue($name) {
-        $name = explode(' ', $name);
-        if (count($name) == 3) {
-            $data = & $this->wrappers[$name[0]][$name[1]][$name[2]];
-        } else {
-            $data = & $this->wrappers[$name[0]][$name[1]];
-        }
-        return $data;
     }
 
     /**
