@@ -141,7 +141,8 @@ class ConstellationRenderer extends Nette\Object implements IRenderer {
         $title = $this->dataGrid->translate('Previous');
         $link = clone $a->href($this->dataGrid->link('page', $paginator->page - 1));
         $link->title($title);
-        $link->setHtml('<img src="images/icons/fugue/navigation-180.png" width="16" height="16">&nbsp;' . $title);
+        // XXX
+        $link->setHtml('<img src="/adminzone/images/icons/fugue/navigation-180.png">&nbsp;' . $title);
         $prev->add($link);
         $container->add($prev);
         // pages
@@ -164,9 +165,26 @@ class ConstellationRenderer extends Nette\Object implements IRenderer {
         $title = $this->dataGrid->translate('Next');
         $link = clone $a->href($this->dataGrid->link('page', $paginator->page + 1));
         $link->title($title);
-        $link->setHtml('<img src="images/icons/fugue/navigation.png" width="16" height="16">&nbsp;' . $title);
+        // XXX
+        $link->setHtml($title . '&nbsp;<img src="/adminzone/images/icons/fugue/navigation.png">&nbsp;');
         $next->add($link);
         $container->add($next);
+
+        // reset
+        if ($this->dataGrid->rememberState) {
+            $sep = clone $item;
+            $container->add($sep->class('sep'));
+            $form = $this->dataGrid->getForm(TRUE);
+            $stateSubmit = $form['resetSubmit']->control;
+            $stateSubmit->addClass('reset');
+            $stateSubmit->title($stateSubmit->value);
+            $stateSubmit->type('image');
+            // XXX
+            $stateSubmit->src('/adminzone/images/icons/fugue/arrow-circle.png');
+            $reset = clone $item;
+            $reset->add(Html::el('a')->add($stateSubmit));
+            $container->add($reset);
+        }
 
         // page input
 //        $controls = $this->getWrapper('paginator controls container');
