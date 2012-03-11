@@ -41,15 +41,6 @@ class ConstellationRenderer extends Nette\Object implements IRenderer {
                 'container' => 'span class=paginator-controls',
             ),
         ),
-        'operations' => array(
-            'container' => 'span class=operations',
-        ),
-        'info' => array(
-            'container' => 'ul class="message no-margin"',
-            'item' => array(
-                'container' => 'li',
-            ),
-        ),
     );
     /** @var string */
     public $footerFormat = '%operations% %paginator% %info%';
@@ -304,8 +295,8 @@ class ConstellationRenderer extends Nette\Object implements IRenderer {
      * @return string
      */
     public function renderInfo() {
-        $container = $this->getWrapper('info container');
-        $item = $this->getWrapper('info item container');
+        $container = Html::el('ul')->class('message no-margin');
+        $item = Html::el('li');
         $paginator = $this->dataGrid->paginator;
         $form = $this->dataGrid->getForm(TRUE);
 
