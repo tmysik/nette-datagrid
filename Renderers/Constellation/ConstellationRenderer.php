@@ -168,8 +168,9 @@ class ConstellationRenderer extends Nette\Object implements IRenderer {
 
     public function renderPaginator() {
         $paginator = $this->dataGrid->paginator;
-        if ($paginator->pageCount <= 1)
-            return '';
+        if ($paginator->pageCount <= 1) {
+            return Html::el('p')->setHtml('&nbsp;')->render();
+        }
 
         $container = $this->getWrapper('paginator container');
         $translator = $this->dataGrid->getTranslator();
