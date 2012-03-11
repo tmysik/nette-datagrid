@@ -23,13 +23,6 @@ class ConstellationRenderer extends Nette\Object implements IRenderer {
 
     /** @var array  of HTML tags */
     public $wrappers = array(
-        'row.content' => array(
-            'container' => 'tr', // .even, .selected
-            '.even' => 'even',
-            'cell' => array(
-                'container' => 'td', // .checker, .action
-            ),
-        ),
         'row.footer' => array(
             'container' => 'tr class=footer',
             'cell' => array(
@@ -281,7 +274,7 @@ class ConstellationRenderer extends Nette\Object implements IRenderer {
             $iterator = new Nette\Iterators\CachingIterator($this->dataGrid->getRows());
             foreach ($iterator as $data) {
                 $row = $this->generateContentRow($data);
-                $row->addClass($iterator->isEven() ? $this->getValue('row.content .even') : NULL);
+                $row->addClass($iterator->isEven() ? 'even' : null);
                 $body->add($row);
             }
         } else {
@@ -289,8 +282,8 @@ class ConstellationRenderer extends Nette\Object implements IRenderer {
             if ($this->dataGrid->hasOperations()) {
                 ++$size;
             }
-            $row = $this->getWrapper('row.content container');
-            $cell = $this->getWrapper('row.content cell container');
+            $row = Html::el('tr');
+            $cell = Html::el('td');
             $cell->colspan = $size;
             $cell->style = 'text-align:center';
             $cell->add(Html::el('div')->setText($this->dataGrid->translate('No data were found')));
@@ -484,7 +477,7 @@ class ConstellationRenderer extends Nette\Object implements IRenderer {
      */
     protected function generateContentRow($data) {
         $form = $this->dataGrid->getForm(TRUE);
-        $row = $this->getWrapper('row.content container');
+        $row = Html::el('tr');
 
         if ($this->dataGrid->hasOperations() || $this->dataGrid->hasActions()) {
             $primary = $this->dataGrid->keyName;
@@ -496,14 +489,14 @@ class ConstellationRenderer extends Nette\Object implements IRenderer {
         // checker
         if ($this->dataGrid->hasOperations()) {
             $value = $form['checker'][$data[$primary]]->getControl();
-            $cell = $this->getWrapper('row.content cell container')->setHtml((string) $value);
-            $cell->addClass('checker');
+            $cell = Html::el('td')->setHtml((string) $value);
+            $cell->addClass('table-check-cell');
             $row->add($cell);
         }
 
         // content
         foreach ($this->dataGrid->getColumns() as $column) {
-            $cell = $this->getWrapper('row.content cell container');
+            $cell = Html::el('td');
             $cell->attrs = $column->getCellPrototype()->attrs;
 
             if ($column instanceof Columns\ActionColumn) {
@@ -599,6 +592,7 @@ class ConstellationRenderer extends Nette\Object implements IRenderer {
      * @param  string
      * @return Html
      */
+    // XXX REMOVE!
     protected function getWrapper($name) {
         $data = $this->getValue($name);
         return $data instanceof Html ? clone $data : Html::el($data);
