@@ -306,19 +306,29 @@ class ConstellationRenderer extends Nette\Object implements IRenderer {
         $pageSize = Html::el('div')->class('float-right')
                 ->setHtml(str_replace(
                         array('%selectbox%', '%submit%'),
-                        array($form['items']->control, $form['itemsSubmit']->control->title($form['itemsSubmit']->control->value)),
+                        array($form['items']->control->addClass('small'), $form['itemsSubmit']->control->title($form['itemsSubmit']->control->value)->addClass('small')),
                         $this->dataGrid->translate('Show %selectbox% entries %submit%')));
         $container->add($pageSize);
 
         // operations
         if ($this->dataGrid->hasOperations()) {
             $container->add(Html::el('div')->class('datagrid-operations-picto'));
-            // XXX
-//            <a href="#" class="button">Select All</a>
-//            <a href="#" class="button">Unselect All</a>
-//            <span class="sep"></span>
-            $container->add($form['operations']->control);
-            $container->add($form['operationSubmit']->control->title($form['operationSubmit']->control->value));
+            $title = $this->getDataGrid()->translate('Select all');
+            $container->add(Html::el('a')
+                    ->href('#')
+                    ->class('button selectall')
+                    ->title($title)
+                    ->setText($title));
+            $title = $this->getDataGrid()->translate('Unselect all');
+            $container->add(Html::el('a')
+                    ->href('#')
+                    ->class('button unselectall')
+                    ->title($title)
+                    ->setText($title));
+            $container->add(Html::el('span')
+                    ->class('sep'));
+            $container->add($form['operations']->control->addClass('small'));
+            $container->add($form['operationSubmit']->control->title($form['operationSubmit']->control->value)->addClass('small'));
         }
 
         $container->add(Html::el('div')->class('clear'));
