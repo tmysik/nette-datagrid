@@ -141,8 +141,11 @@ class ConstellationRenderer extends Nette\Object implements IRenderer {
         $title = $this->dataGrid->translate('Previous');
         $link = clone $a->href($this->dataGrid->link('page', $paginator->page - 1));
         $link->title($title);
-        // XXX
-        $link->setHtml('<img src="/adminzone/images/icons/fugue/navigation-180.png">&nbsp;' . $title);
+        $basePath = $this->getDataGrid()->getPresenter()->getBasePath();
+        $link->add(Html::el('img')
+                ->src($basePath . '/adminzone/images/icons/fugue/navigation-180.png'));
+        $link->add('&nbsp;');
+        $link->add($title);
         $prev->add($link);
         $container->add($prev);
         // pages
@@ -165,8 +168,10 @@ class ConstellationRenderer extends Nette\Object implements IRenderer {
         $title = $this->dataGrid->translate('Next');
         $link = clone $a->href($this->dataGrid->link('page', $paginator->page + 1));
         $link->title($title);
-        // XXX
-        $link->setHtml($title . '&nbsp;<img src="/adminzone/images/icons/fugue/navigation.png">&nbsp;');
+        $link->add($title);
+        $link->add('&nbsp;');
+        $link->add(Html::el('img')
+                ->src($basePath . '/adminzone/images/icons/fugue/navigation.png'));
         $next->add($link);
         $container->add($next);
 
