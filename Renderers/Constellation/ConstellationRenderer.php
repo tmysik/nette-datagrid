@@ -149,11 +149,27 @@ class ConstellationRenderer extends Nette\Object implements IRenderer {
         $prev->add($link);
         $container->add($prev);
         // pages
+        $dotsRendered = false;
         for ($i = 1; $i <= $paginator->pageCount; ++$i) {
+            if ($paginator->pageCount > 5) {
+                if ($i == 1
+                        || $i == $paginator->pageCount
+                        || abs($i - $paginator->page) <= 1) {
+                    $dotsRendered = false;
+                } else {
+                    if (!$dotsRendered) {
+                        $dotsRendered = true;
+                        $dots = clone $item;
+                        $dots->setHtml('&hellip;');
+                        $container->add($dots);
+                    }
+                    continue;
+                }
+            }
             $page = clone $item;
             $page->addClass('page');
             $title = $this->dataGrid->translate('Page %d', $i);
-            $link = clone $a->href($this->dataGrid->link('page', $i - 1));
+            $link = clone $a->href($this->dataGrid->link('page', $i));
             $link->title($title);
             $link->setText($i);
             if ($i == $paginator->page) {
