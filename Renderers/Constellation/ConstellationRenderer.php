@@ -200,8 +200,7 @@ class ConstellationRenderer extends Nette\Object implements IRenderer {
             $stateSubmit->addClass('reset');
             $stateSubmit->title($stateSubmit->value);
             $stateSubmit->type('image');
-            // XXX
-            $stateSubmit->src('/adminzone/images/icons/fugue/arrow-circle.png');
+            $stateSubmit->src($this->getDataGrid()->getPresenter()->getBasePath() . '/adminzone/images/icons/fugue/arrow-circle.png');
             $reset = clone $item;
             $reset->add(Html::el('a')->add($stateSubmit));
             $container->add($reset);
