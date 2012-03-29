@@ -1,13 +1,11 @@
 {snippet grid}
-
+    {widget $control formBegin}
     {foreach $flashes as $flash}
         <ul class="message {$flash->type}">
             <li>{$flash->message}</li>
             <li class="close-bt"></li>
         </ul>
     {/foreach}
-
-    {widget $control formBegin}
     {widget $control errors}
     {widget $control navigator}
     {widget $control table}
