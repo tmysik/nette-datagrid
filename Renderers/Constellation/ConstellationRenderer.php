@@ -328,7 +328,7 @@ class ConstellationRenderer extends Nette\Object implements IRenderer {
             $container->add(Html::el('span')
                     ->class('sep'));
             $container->add($form['operations']->control->addClass('small'));
-            $container->add($form['operationSubmit']->control->title($form['operationSubmit']->control->value)->addClass('small'));
+            $container->add($form['operationSubmit']->control->title($form['operationSubmit']->control->value)->addClass('small red'));
         }
 
         $container->add(Html::el('div')->class('clear'));
